@@ -2,11 +2,22 @@
 
 using LightGraphs
 using RCall
+using ArgParse
 
-a = ARGS
-readdlm(a[1])
+parser = ArgParseSettings(description = "Find communities using Non Backtracking Matrix algorithm.")
 
+@add_arg_table parser begin
+    "--output", "-o"
+    "file"
+end
+
+args = parse_args(s)
+
+output_file = get(args, "output", STDOUT)
+
+red = readdlm(args["file"])
 g = Graph()
+
 ultimovertice = Int64(maximum(red))
 add_vertices!(g,ultimovertice)
 for n in 1:Int64((length(red)/2))
@@ -41,8 +52,6 @@ if real(last(valores)) > treshold
 end
 
 
-#mmm = eigvals(M)
-
 cuantos = Array(Float64,0)
 index = Array(Int64,0)
 for i in 1:length(valores)
@@ -51,6 +60,8 @@ for i in 1:length(valores)
         push!(index,i)
     end
 end
+
+print("There are $(length(cuantos)) communities in this Network \n")
 
 matriz_embedded = real(vectores[:,index])
 arriba = matriz_embedded[1:nv(g),:]
@@ -81,10 +92,15 @@ end
 
 grupos = membresia(length(index),hola)
 
-if typeof(red[1,1]) != Int
-  comunidades = hcat(Nodes,grupos)
-else
-  comunidades = hcat(vertices(g),grupos)
+comunidades = hcat(vertices(g),grupos)
+
+
+#print("$(length(cuantos))")
+
+writedlm("../Resultados/NBM_communities_$(la_red)",comunidades)
 end
 
-writedlm("../Resultados/NBM_communities_$(a[1])",comunidades)
+print("Your results will be saved as: NBM_communities_$(a[k]) \n")
+
+
+writedlm(output_file, comunidades)
