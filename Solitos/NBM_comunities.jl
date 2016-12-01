@@ -11,9 +11,20 @@ parser = ArgParseSettings(description = "Find communities using Non Backtracking
     "file"
 end
 
-args = parse_args(s)
+args = parse_args(parser)
 
 output_file = get(args, "output", STDOUT)
+if is(output_file, nothing)
+  output_file = STDOUT
+else
+  output_file = args["output"]
+end
+
+function debug(msg)
+  write(STDERR, msg)
+end
+
+debug("Output File: $(output_file)\n")
 
 red = readdlm(args["file"])
 g = Graph()
@@ -36,7 +47,9 @@ function la_matriz(g)
 end
 
 M = la_matriz(g)
+eigs(M, nev=1)
 valores, vectores = eigs(M, nev=20)
+
 treshold = real(sqrt(valores[1]))
 if real(last(valores)) > treshold
     valores, vectores = eigs(M, nev=30)
@@ -61,7 +74,7 @@ for i in 1:length(valores)
     end
 end
 
-print("There are $(length(cuantos)) communities in this Network \n")
+debug("There are $(length(cuantos)) communities in this Network \n")
 
 matriz_embedded = real(vectores[:,index])
 arriba = matriz_embedded[1:nv(g),:]
@@ -93,14 +106,5 @@ end
 grupos = membresia(length(index),hola)
 
 comunidades = hcat(vertices(g),grupos)
-
-
-#print("$(length(cuantos))")
-
-writedlm("../Resultados/NBM_communities_$(la_red)",comunidades)
-end
-
-print("Your results will be saved as: NBM_communities_$(a[k]) \n")
-
 
 writedlm(output_file, comunidades)
