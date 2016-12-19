@@ -1,7 +1,9 @@
+#!/usr/bin/env julia
 using LightGraphs
 using RCall
 
 R_kmeans = R"kmeans"
+algorithm = "Normalized Reluctant Communities"
 
 include("matrices.jl")
 include("utils.jl")
@@ -27,4 +29,4 @@ grupos = membresia(length(index)+1,contraida)
 
 comunidades = hcat(vertices(g),grupos)
 
-println(comunidades)
+writedlm(output_file, comunidades)
