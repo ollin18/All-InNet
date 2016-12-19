@@ -24,6 +24,8 @@ function kron_δ(i,j)
   end
 end
 
+
+"""
 function la_NBM(g::SimpleGraph)
     edgeidmap = Dict{Edge, Int}()
     m = 0
@@ -47,7 +49,31 @@ function la_NBM(g::SimpleGraph)
         i, j = src(e), dst(e)
         for (e2,v) in edgeidmap
           k, l = src(e2), dst(e2)
-          B[v, u] = (kron_δ(j,k)*(1-kron_δ(l,i)))+(kron_δ(j,k)*kron_δ(l,i)*inv_degree(g,j))
+          B[v,u] = (kron_δ(j,k)*(1-kron_δ(i,l)))*(1/(degree(g,j)))
+        end
+    end
+    return B, edgeidmap
+end
+"""
+function la_NBM(g::SimpleGraph)
+    edgeidmap = Dict{Edge, Int}()
+    aristas = ne(g)
+    m = 0
+    for e in edges(g)
+        m += 1
+        edgeidmap[e] = m
+	edgeidmap[reverse(e)] = m + aristas
+    end
+
+    B = spzeros(Float64, 2*aristas, 2*aristas)
+
+
+    for (e,u) in edgeidmap
+        i, j = src(e), dst(e)
+	eles = neighbors(g,j)
+	k = j
+        for l in eles
+          B[edgeidmap[k=>l],u] = (kron_δ(j,k)*(1-kron_δ(l,i)))+(kron_δ(j,k)*kron_δ(l,i)*inv_degree(g,j))
         end
     end
     return B, edgeidmap
