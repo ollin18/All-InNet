@@ -16,12 +16,7 @@ function inv_degree(g,i)
     1/degree(g,i)
 end
 
-function kron_δ(i,j)
-  if i == j
-    return 1
-  else
-    return 0
-  end
+
 end
 
 """

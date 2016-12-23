@@ -67,6 +67,8 @@ function eigens(M)
 	valores, vectores
 end
 
+
+
 function num_com(v)
 	cuantos = Array(Float64,0)
 	index = Array(Int64,0)
@@ -77,6 +79,15 @@ function num_com(v)
 		end
 	end
 	cuantos, index
+end
+
+
+function embe_nbm(g,ind,vec)
+	reales = real(vectores[:,index])
+	arriba = reales[1:nv(g),:]
+	abajo = reales[nv(g)+1:2*nv(g),:]
+	matriz_embedded = arriba + abajo
+	matriz_embedded
 end
 
 function contrae(g,v,ei)

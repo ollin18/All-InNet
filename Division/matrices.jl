@@ -1,3 +1,14 @@
+function NB_matrix(g::SimpleGraph)
+	A = full(adjacency_matrix(g))
+    ceros = zeros(A)
+    D = zeros(A)
+    menos = -1 * eye(A)
+    for n in 1:nv(g)
+        D[n,n] = degree(g,n)-1
+    end
+    sparse(hcat(vcat(ceros,menos),vcat(D,A)))
+end
+
 function flux_matrix(g::SimpleGraph)
     edgeidmap = Dict{Edge, Int}()
     aristas = ne(g)
